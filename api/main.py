@@ -3,11 +3,24 @@ from ai.scorer import CropScorer, SoilReading
 from ai.normal_mode import run_normal_mode
 from ai.enhanced_mode import run_enhanced_mode
 from ai.scan_mode import ScanModeEngine
+from ai.tflite_runner import TFLiteScorer
 from api.schemas import SoilInput, EnhancedRequest, ScanRequest
 
 
 app = FastAPI(title="MudBot Agri-AI API", version="1.0")
-scorer = CropScorer("config/crop_database.csv")
+
+# Prefer TFLite scorer when available; fall back to physics-based CropScorer
+_tflite = None
+try:
+    _tflite = TFLiteScorer()
+except Exception:
+    _tflite = None
+
+if _tflite is not None and _tflite.is_ready():
+    scorer = _tflite
+else:
+    scorer = CropScorer("config/crop_database.csv")
+
 engine = ScanModeEngine(scorer)
 
 
