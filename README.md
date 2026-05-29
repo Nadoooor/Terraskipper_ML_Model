@@ -46,3 +46,37 @@ curl -X POST http://localhost:8000/api/scan \
 Repository: https://github.com/Nadoooor/Terraskipper_ML_Model
 
 License: MIT
+
+## TensorFlow Lite Integration
+
+This project includes an optional TensorFlow training + TFLite export pipeline and a lightweight TFLite runner for on-device inference.
+
+1. Train and export a TFLite model:
+
+```
+python models/train_tf.py
+```
+
+This will produce:
+- models/suitability_model_tf/   (SavedModel)
+- models/suitability_model.tflite
+- models/scaler_tf.pkl
+- models/features_tf.json
+
+2. Run inference with the TFLite scorer (example):
+
+```python
+from ai.tflite_runner import TFLiteScorer
+from ai.scorer import SoilReading
+
+scorer = TFLiteScorer()
+if scorer.is_ready():
+    reading = SoilReading(0.65, 1.5, 28, 6.5)
+    print(scorer.score_all(reading)[:5])
+else:
+    print('TFLite model not found or artifacts missing')
+```
+
+Notes:
+- TensorFlow (>=2.13) is required to run training and to convert to TFLite on most platforms. For lightweight inference on certain platforms, consider installing `tflite-runtime` instead of full TensorFlow.
+- The TFLite runner mirrors the scorer API but returns only the model score (no per-parameter breakdown).
