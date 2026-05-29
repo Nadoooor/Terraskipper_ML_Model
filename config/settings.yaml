@@ -1,0 +1,19 @@
+thresholds:
+  min_suitability_score: 50.0
+  max_cells_per_zone: 5000
+
+weights:
+  default_moisture: 0.30
+  default_salinity: 0.25
+  default_temperature: 0.30
+  default_ph: 0.15
+
+api:
+  host: 0.0.0.0
+  port: 8000
+  debug: false
+
+ml_model:
+  n_estimators: 300
+  max_depth: 12
+  min_samples_leaf: 4
