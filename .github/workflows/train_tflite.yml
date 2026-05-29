@@ -1,0 +1,39 @@
+name: Train and Build TFLite
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    name: Train & Export TFLite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Train and export TFLite
+        run: python models/train_tf.py
+
+      - name: Upload TFLite artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: tflite-artifacts
+          path: |
+            models/suitability_model.tflite
+            models/scaler_tf.pkl
+            models/features_tf.json
+            models/suitability_model_tf/**
