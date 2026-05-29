@@ -85,7 +85,19 @@ def train_tf(crop_db_path: str, model_dir: str = 'models/suitability_model_tf',
         json.dump(feature_cols, f)
 
     # Save SavedModel
-    model.save(model_dir)
+    try:
+        # Keras 3+ prefers model.export for SavedModel export
+        if hasattr(model, 'export'):
+            model.export(model_dir)
+        else:
+            # Use tf.saved_model.save for compatibility
+            tf.saved_model.save(model, model_dir)
+    except Exception:
+        # Final fallback to legacy save (may raise on some TF versions)
+        try:
+            model.save(model_dir)
+        except Exception as e:
+            print('[WARN] model.save failed:', e)
 
     # Convert to TFLite
     converter = tf.lite.TFLiteConverter.from_saved_model(model_dir)
