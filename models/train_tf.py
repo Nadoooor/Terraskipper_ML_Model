@@ -1,3 +1,8 @@
+import os
+import sys
+# Ensure repo root is on sys.path so imports like 'ai' resolve when run from models/
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import json
 import joblib
 import numpy as np
